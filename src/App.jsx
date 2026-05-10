@@ -3,32 +3,27 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 
-// Import components
 import Login from './components/Auth/Login';
+import Signup from './components/Auth/Signup';
 import StudentDashboard from './components/Student/StudentDashboard';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import ExamInterface from './components/Student/ExamInterface';
 
-// Protected Route Component
+const BG = '#0d1f2d';
+
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { isAuthenticated, userData, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-navy">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+      <div style={{ minHeight:'100vh', backgroundColor:BG, display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ width:48, height:48, border:'4px solid #1e3a50', borderTop:'4px solid #2dd4bf', borderRadius:'50%', animation:'spin 1s linear infinite' }} />
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (requiredRole && userData?.role !== requiredRole) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (requiredRole && userData?.role !== requiredRole) return <Navigate to="/dashboard" replace />;
   return children;
 };
 
@@ -37,52 +32,18 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route
-        path="/login"
-        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
-      />
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />} />
 
-      {/* Student Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute requiredRole="student">
-            <StudentDashboard />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/dashboard" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
+      <Route path="/exam/:sessionId" element={<ProtectedRoute requiredRole="student"><ExamInterface /></ProtectedRoute>} />
+      <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
 
-      <Route
-        path="/exam/:sessionId"
-        element={
-          <ProtectedRoute requiredRole="student">
-            <ExamInterface />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Admin Routes */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute requiredRole="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Catch all */}
-      <Route
-        path="*"
-        element={
-          isAuthenticated ? (
-            <Navigate to={userData?.role === 'admin' ? '/admin' : '/dashboard'} replace />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
+      <Route path="*" element={
+        isAuthenticated
+          ? <Navigate to={userData?.role === 'admin' ? '/admin' : '/dashboard'} replace />
+          : <Navigate to="/login" replace />
+      } />
     </Routes>
   );
 }
