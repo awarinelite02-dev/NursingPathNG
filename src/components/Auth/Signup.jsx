@@ -71,7 +71,7 @@ const Signup = () => {
       if (err.code === 'auth/email-already-in-use') {
         setError('This email is already registered. Please sign in.');
       } else {
-        setError('Failed to create account. Please try again.');
+        setError(err.message || 'Failed to create account. Please try again.');
       }
     } finally {
       setLoading(false);
