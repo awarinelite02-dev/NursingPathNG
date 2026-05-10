@@ -16,9 +16,27 @@ export const AuthProvider = ({ children }) => {
       try {
         if (authUser) {
           setUser(authUser);
-          
-          // Fetch user data from Firestore
-          const data = await authService.getUserData(authUser.uid);
+          // Retry fetching user data a few times — doc may not exist yet right after signup
+          let data = null;
+          for (let i = 0; i < 5; i++) {
+            data = await authService.getUserData(authUser.uid);
+            if (data) break;
+            await new Promise(res => setTimeout(res, 500));
+          }
+          // If still no doc (e.g. Google sign-in first time), create a default one
+          if (!data) {
+            await authService.signUp(authUser.email, null, {
+              name: authUser.displayName || authUser.email.split('@')[0],
+              role: 'student',
+              uid: authUser.uid,
+            }).catch(() => {});
+            data = await authService.getUserData(authUser.uid).catch(() => ({
+              uid: authUser.uid,
+              email: authUser.email,
+              name: authUser.displayName || '',
+              role: 'student',
+            }));
+          }
           setUserData(data);
         } else {
           setUser(null);
@@ -26,6 +44,8 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (err) {
         setError(err.message);
+        // Don't block loading even on error
+        setUser(authUser);
       } finally {
         setLoading(false);
       }
