@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
-import { FiLogOut, FiMoon, FiSun, FiPlus, FiUpload, FiBarChart3, FiCalendar } from 'react-icons/fi';
+import { useTheme } from '../../contexts/ThemeContext';
+import { FiLogOut, FiMoon, FiSun, FiPlus, FiUpload, FiBarChart2, FiCalendar } from 'react-icons/fi';
 
 const AdminDashboard = () => {
   const { user, userData, signOut, isAdmin } = useAuth();
@@ -33,11 +33,11 @@ const AdminDashboard = () => {
   };
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: FiBarChart3 },
+    { id: 'overview', label: 'Overview', icon: FiBarChart2 },
     { id: 'schools', label: 'Schools', icon: FiPlus },
     { id: 'questions', label: 'Questions', icon: FiUpload },
     { id: 'exams', label: 'Exams', icon: FiCalendar },
-    { id: 'analytics', label: 'Analytics', icon: FiBarChart3 },
+    { id: 'analytics', label: 'Analytics', icon: FiBarChart2 },
   ];
 
   return (
@@ -159,7 +159,7 @@ const AdminDashboard = () => {
                     onClick={() => setActiveTab('analytics')}
                     className="flex items-center gap-3 p-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-500 text-white rounded-lg font-semibold transition"
                   >
-                    <FiBarChart3 className="w-5 h-5" />
+                    <FiBarChart2 className="w-5 h-5" />
                     View Analytics
                   </button>
                 </div>

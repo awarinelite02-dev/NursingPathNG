@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import examService from '../services/examService';
-import questionService from '../services/questionService';
+import { useAuth } from '../../contexts/AuthContext';
+import examService from '../../services/examService';
+import questionService from '../../services/questionService';
 import { FiClock, FiChevronLeft, FiChevronRight, FiBookmark, FiFlag, FiPause, FiCheck } from 'react-icons/fi';
 
 const ExamInterface = () => {

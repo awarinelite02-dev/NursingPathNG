@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
-import examService from '../services/examService';
+import { useTheme } from '../../contexts/ThemeContext';
+import examService from '../../services/examService';
 import { FiLogOut, FiMoon, FiSun, FiClock, FiBook, FiTrendingUp, FiUsers, FiMessageSquare, FiBell } from 'react-icons/fi';
 
 const StudentDashboard = () => {
