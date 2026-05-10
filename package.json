@@ -1,0 +1,59 @@
+{
+  "name": "nursing-cbt-platform",
+  "version": "1.0.0",
+  "description": "Nursing Schools Entrance Post-UTME CBT Platform with AI tutoring and gamification",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.15.0",
+    "react-icons": "^4.12.0",
+    "react-hot-toast": "^2.4.1",
+    "firebase": "^10.5.0",
+    "@anthropic-ai/sdk": "^0.9.0",
+    "tailwindcss": "^3.3.5",
+    "postcss": "^8.4.31",
+    "autoprefixer": "^10.4.16",
+    "date-fns": "^2.30.0",
+    "papaparse": "^5.4.1",
+    "framer-motion": "^10.16.4",
+    "zustand": "^4.4.3",
+    "react-quill": "^2.0.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1",
+    "tailwindcss": "^3.3.5",
+    "postcss": "^8.4.31",
+    "autoprefixer": "^10.4.16"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "firebase:deploy": "firebase deploy",
+    "firebase:init": "firebase init"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  }
+}
