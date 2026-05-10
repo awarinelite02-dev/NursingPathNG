@@ -1,199 +1,215 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../../contexts/ThemeContext';
 import examService from '../../services/examService';
-import { FiLogOut, FiMoon, FiSun, FiClock, FiBook, FiTrendingUp, FiUsers, FiMessageSquare, FiBell } from 'react-icons/fi';
+
+const BG = '#0d1f2d';
+const CARD = '#132233';
+const CARD2 = '#1a2e40';
+const BORDER = '#1e3a50';
+const TEAL = '#2dd4bf';
+const TEXT = '#f0f9ff';
+const MUTED = '#94a3b8';
+
+const s = {
+  page: { minHeight:'100vh', backgroundColor:BG, fontFamily:"'Poppins',sans-serif", color:TEXT },
+  topBar: { display:'flex', alignItems:'center', justifyContent:'space-between', padding:'1rem 1.2rem', backgroundColor:CARD, borderBottom:`1px solid ${BORDER}`, position:'sticky', top:0, zIndex:10 },
+  logo: { display:'flex', alignItems:'center', gap:'0.5rem', fontSize:'1.4rem', fontWeight:900, color:TEAL },
+  userBadge: { display:'flex', alignItems:'center', gap:'0.6rem', backgroundColor:CARD2, border:`1px solid ${BORDER}`, borderRadius:30, padding:'0.4rem 0.9rem' },
+  userName: { fontSize:'1rem', fontWeight:800, color:TEXT },
+  userRole: { fontSize:'0.75rem', color:MUTED, fontWeight:600 },
+  body: { padding:'1rem' },
+  // Hero banner
+  heroBanner: { background:'linear-gradient(135deg,#1e4d6b 0%,#0d3352 60%,#132233 100%)', borderRadius:16, padding:'1.2rem', marginBottom:'1rem', border:`1px solid ${BORDER}`, position:'relative', overflow:'hidden' },
+  heroLabel: { fontSize:'0.75rem', fontWeight:800, color:TEAL, letterSpacing:'0.1em', marginBottom:'0.3rem' },
+  heroTitle: { fontSize:'1.5rem', fontWeight:900, color:TEXT, marginBottom:'0.2rem' },
+  heroSub: { fontSize:'0.9rem', color:MUTED, fontWeight:600, marginBottom:'1rem' },
+  heroPremium: { display:'inline-flex', alignItems:'center', gap:'0.4rem', backgroundColor:'rgba(45,212,191,0.15)', border:`1px solid ${TEAL}`, borderRadius:20, padding:'0.25rem 0.75rem', fontSize:'0.8rem', fontWeight:700, color:TEAL, marginBottom:'1rem' },
+  mockCard: { backgroundColor:'rgba(255,255,255,0.07)', borderRadius:12, padding:'0.8rem 1rem', marginBottom:'1rem', display:'flex', alignItems:'center', gap:'0.8rem', border:`1px solid ${BORDER}` },
+  mockIcon: { width:40, height:40, borderRadius:10, backgroundColor:'#1e4d6b', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 },
+  mockTitle: { fontSize:'0.95rem', fontWeight:800, color:TEXT },
+  mockSub: { fontSize:'0.8rem', color:MUTED, fontWeight:600 },
+  heroButtons: { display:'flex', gap:'0.75rem' },
+  startBtn: { flex:1, padding:'0.8rem', backgroundColor:TEAL, color:'#0d1f2d', border:'none', borderRadius:10, fontSize:'1rem', fontWeight:900, cursor:'pointer' },
+  continueBtn: { flex:1, padding:'0.8rem', backgroundColor:'rgba(255,255,255,0.08)', color:TEXT, border:`1px solid ${BORDER}`, borderRadius:10, fontSize:'1rem', fontWeight:800, cursor:'pointer' },
+  // Stats row
+  statsRow: { display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:'0.75rem', marginBottom:'1rem' },
+  statCard: { backgroundColor:CARD, borderRadius:14, padding:'1rem', border:`1px solid ${BORDER}`, display:'flex', alignItems:'center', gap:'0.8rem' },
+  statIcon: { width:44, height:44, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 },
+  statNum: { fontSize:'1.6rem', fontWeight:900, color:TEXT, lineHeight:1 },
+  statLabel: { fontSize:'0.75rem', color:MUTED, fontWeight:700, textTransform:'uppercase', letterSpacing:'0.05em', marginTop:2 },
+  // Section
+  sectionTitle: { fontSize:'1.2rem', fontWeight:900, color:TEXT, marginBottom:'0.75rem', marginTop:'1.2rem' },
+  // Quick actions grid
+  actionsGrid: { display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:'0.75rem', marginBottom:'1rem' },
+  actionCard: { backgroundColor:CARD, borderRadius:14, padding:'1rem', border:`1px solid ${BORDER}`, cursor:'pointer', textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', gap:'0.5rem' },
+  actionIcon: { width:48, height:48, borderRadius:14, display:'flex', alignItems:'center', justifyContent:'center', fontSize:24, marginBottom:'0.2rem' },
+  actionTitle: { fontSize:'0.95rem', fontWeight:800, color:TEXT },
+  actionSub: { fontSize:'0.75rem', color:MUTED, fontWeight:600 },
+  // Category cards
+  catCard: { backgroundColor:CARD, borderRadius:14, padding:'1rem', border:`1px solid ${BORDER}`, cursor:'pointer', display:'flex', alignItems:'center', gap:'0.9rem', marginBottom:'0.75rem' },
+  catIcon: { width:44, height:44, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 },
+  catTitle: { fontSize:'1rem', fontWeight:800, color:TEXT },
+  catSub: { fontSize:'0.8rem', color:MUTED, fontWeight:600 },
+  // Bottom nav
+  bottomNav: { position:'fixed', bottom:0, left:0, right:0, backgroundColor:CARD, borderTop:`1px solid ${BORDER}`, display:'flex', justifyContent:'space-around', padding:'0.6rem 0', zIndex:10 },
+  navBtn: { display:'flex', flexDirection:'column', alignItems:'center', gap:'0.2rem', background:'none', border:'none', cursor:'pointer', padding:'0.3rem 0.8rem' },
+  navIcon: { fontSize:22 },
+  navLabel: { fontSize:'0.65rem', fontWeight:700, color:MUTED },
+};
+
+const quickActions = [
+  { icon:'⚡', bg:'#1e3a1e', label:'Daily Practice', sub:'Take daily exam', path:'/daily' },
+  { icon:'📖', bg:'#1e1e3a', label:'Course Drill', sub:'Exam by courses', path:'/courses' },
+  { icon:'🎯', bg:'#3a1e1e', label:'Topic Drill', sub:'Exam by topics', path:'/topics' },
+  { icon:'🏥', bg:'#1e3a2e', label:'Mock Exams', sub:'Hospital Final exam', path:'/mock' },
+  { icon:'📚', bg:'#2e1e3a', label:'Past Questions', sub:'NMCN past questions', path:'/past-questions' },
+  { icon:'🔖', bg:'#3a2e1e', label:'Bookmarks', sub:'Review bookmarked', path:'/bookmarks' },
+];
+
+const categories = [
+  { icon:'🏥', bg:'#1e3a50', label:'General Nursing', sub:'Basic RN' },
+  { icon:'👶', bg:'#2e1e3a', label:'Midwifery', sub:'Post Basic' },
+  { icon:'🧠', bg:'#1e3a2e', label:'Psychiatric Nursing', sub:'Mental Health' },
+  { icon:'🩺', bg:'#3a1e1e', label:'Community Health', sub:'Public Health' },
+  { icon:'💊', bg:'#3a2e1e', label:'Pharmacology', sub:'Drug & Dosage' },
+];
 
 const StudentDashboard = () => {
-  const { user, userData, signOut, isAuthenticated } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { user, userData, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeMockExam, setActiveMockExam] = useState(null);
   const [stats, setStats] = useState(null);
-  const [timeUntilMock, setTimeUntilMock] = useState('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-
-    fetchDashboardData();
-  }, [isAuthenticated, userData]);
-
-  const fetchDashboardData = async () => {
-    try {
-      if (userData?.school_id) {
-        const mockExam = await examService.getActiveMockExam(userData.school_id);
-        setActiveMockExam(mockExam);
-      }
-
-      const performance = await examService.getExamPerformanceStats(user.uid);
-      setStats(performance);
-    } catch (error) {
-      console.error('Error fetching dashboard:', error);
-    }
-  };
+    const load = async () => {
+      try {
+        const perf = await examService.getExamPerformanceStats(user.uid);
+        setStats(perf);
+        if (userData?.school_id) {
+          const mock = await examService.getActiveMockExam(userData.school_id);
+          setActiveMockExam(mock);
+        }
+      } catch (e) {}
+    };
+    if (user) load();
+  }, [user, userData]);
 
   const handleLogout = async () => {
-    try {
-      await signOut();
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    await signOut();
+    navigate('/login');
   };
 
-  if (!userData) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-navy">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
-  }
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <div className="flex h-screen bg-white dark:bg-navy text-navy dark:text-white">
-      {/* Sidebar */}
-      <div className="w-64 bg-navy dark:bg-navy-dark border-r border-blue-200 dark:border-navy-light p-6 flex flex-col">
-        {/* Logo */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <div className="w-8 h-8 bg-accent rounded-lg" />
-            Nursing CBT
-          </h1>
-        </div>
-
-        {/* User Card */}
-        <div className="bg-navy-light rounded-lg p-4 mb-8">
-          <div className="w-12 h-12 bg-accent rounded-full mb-3" />
-          <p className="font-semibold text-white text-sm">{userData.name}</p>
-          <p className="text-blue-300 text-xs">Student • Tier: {userData.tier}</p>
-          <p className="text-yellow-300 text-xs mt-1">⭐ {userData.xp} XP</p>
-        </div>
-
-        {/* Navigation */}
-        <nav className="space-y-2 flex-1">
-          {[
-            { icon: FiClock, label: 'Mock Exam', path: '/mock' },
-            { icon: FiBook, label: 'Past Questions', path: '/past-questions' },
-            { icon: FiTrendingUp, label: 'Performance', path: '/performance' },
-            { icon: FiUsers, label: 'Leaderboard', path: '/leaderboard' },
-            { icon: FiMessageSquare, label: 'AI Tutor', path: '/ai-tutor' },
-            { icon: FiBell, label: 'Notifications', path: '/notifications' },
-          ].map((item) => (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-navy-light transition text-blue-100 hover:text-white"
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        {/* Bottom Actions */}
-        <div className="space-y-2 border-t border-navy-light pt-4">
-          <button
-            onClick={toggleTheme}
-            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-navy-light transition text-blue-100"
-          >
-            {isDarkMode ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
-            <span className="text-sm">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-          </button>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-red-600/20 transition text-red-300"
-          >
-            <FiLogOut className="w-5 h-5" />
-            <span className="text-sm">Logout</span>
-          </button>
+    <div style={s.page}>
+      {/* Top Bar */}
+      <div style={s.topBar}>
+        <div style={s.logo}>📚 NMCNCBT</div>
+        <div style={s.userBadge}>
+          <div style={{ fontSize:22 }}>👤</div>
+          <div>
+            <div style={s.userName}>{userData?.name?.split(' ')[0] || 'Student'}</div>
+            <div style={s.userRole}>⭐ Admin</div>
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h2 className="text-4xl font-bold mb-2">Welcome back, {userData.name}! 👋</h2>
-            <p className="text-blue-600 dark:text-blue-300">You're on a {userData.daily_streak} day study streak 🔥</p>
-          </div>
+      <div style={{ ...s.body, paddingBottom:'5rem' }}>
+        {/* Hero Banner */}
+        <div style={s.heroBanner}>
+          <div style={s.heroLabel}>🏥 NMCN CBT PLATFORM</div>
+          <div style={s.heroTitle}>{greeting}, {userData?.name?.split(' ')[0]}! 👋</div>
+          <div style={s.heroPremium}>⭐ Premium subscriber — all content unlocked</div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-navy-light dark:to-navy rounded-lg p-6 border border-blue-200 dark:border-navy-light">
-              <div className="text-3xl font-bold text-navy dark:text-accent mb-2">{stats?.total_exams || 0}</div>
-              <p className="text-sm text-blue-700 dark:text-blue-300">Exams Completed</p>
-            </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-navy-light dark:to-navy rounded-lg p-6 border border-green-200 dark:border-navy-light">
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">{stats?.average_score || 0}%</div>
-              <p className="text-sm text-green-700 dark:text-green-300">Average Score</p>
-            </div>
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-navy-light dark:to-navy rounded-lg p-6 border border-purple-200 dark:border-navy-light">
-              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">{stats?.pass_rate || 0}%</div>
-              <p className="text-sm text-purple-700 dark:text-purple-300">Pass Rate</p>
-            </div>
-            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-navy-light dark:to-navy rounded-lg p-6 border border-yellow-200 dark:border-navy-light">
-              <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">{userData.xp}</div>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300">Total XP Points</p>
+          <div style={s.mockCard}>
+            <div style={s.mockIcon}>🏥</div>
+            <div>
+              <div style={s.mockTitle}>Mock Exams</div>
+              <div style={s.mockSub}>Simulate a real hospital final exam under timed conditions. Tests your full readiness.</div>
             </div>
           </div>
 
-          {/* Main Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Daily Mock Exam */}
-            <div className="bg-gradient-to-br from-accent/10 to-blue-100/50 dark:from-navy-light dark:to-navy rounded-2xl p-8 border border-accent/30 dark:border-navy-light">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center">
-                  <FiClock className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold">Daily Mock Exam</h3>
-              </div>
-              {activeMockExam ? (
-                <>
-                  <p className="text-blue-600 dark:text-blue-300 mb-4">{activeMockExam.title}</p>
-                  <div className="text-sm text-blue-500 dark:text-blue-400 mb-4">⏱️ 24 hours countdown active</div>
-                  <button
-                    onClick={() => navigate('/mock')}
-                    className="w-full bg-accent hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition"
-                  >
-                    Start Exam
-                  </button>
-                </>
-              ) : (
-                <p className="text-blue-600 dark:text-blue-300">No active mock exam at the moment. Check back soon!</p>
-              )}
-            </div>
+          <div style={s.heroButtons}>
+            <button style={s.startBtn} onClick={() => navigate('/mock')}>▶ Start Exam</button>
+            <button style={s.continueBtn} onClick={() => navigate('/mock')}>⏸ Continue 4</button>
+          </div>
+        </div>
 
-            {/* Study Plan */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 dark:from-navy-light dark:to-navy rounded-2xl p-8 border border-green-300/50 dark:border-navy-light">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                  <FiBook className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold">Study Resources</h3>
-              </div>
-              <p className="text-green-700 dark:text-green-300 mb-4">Access past questions and AI tutoring</p>
-              <div className="space-y-2">
-                <button
-                  onClick={() => navigate('/past-questions')}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition"
-                >
-                  Past Questions
-                </button>
-                <button
-                  onClick={() => navigate('/ai-tutor')}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition"
-                >
-                  Ask AI Tutor
-                </button>
-              </div>
+        {/* Stats */}
+        <div style={s.statsRow}>
+          <div style={s.statCard}>
+            <div style={{ ...s.statIcon, backgroundColor:'#1e3a50' }}>📝</div>
+            <div>
+              <div style={s.statNum}>{stats?.total_exams || 0}</div>
+              <div style={s.statLabel}>Exams Taken</div>
+            </div>
+          </div>
+          <div style={s.statCard}>
+            <div style={{ ...s.statIcon, backgroundColor:'#1e3a1e' }}>📊</div>
+            <div>
+              <div style={{ ...s.statNum, color:'#34d399' }}>{stats?.average_score || 0}%</div>
+              <div style={s.statLabel}>Avg. Score</div>
+            </div>
+          </div>
+          <div style={s.statCard}>
+            <div style={{ ...s.statIcon, backgroundColor:'#3a1e1e' }}>🔥</div>
+            <div>
+              <div style={{ ...s.statNum, color:'#fb923c' }}>{userData?.daily_streak || 0}</div>
+              <div style={s.statLabel}>Day Streak</div>
+            </div>
+          </div>
+          <div style={s.statCard}>
+            <div style={{ ...s.statIcon, backgroundColor:'#2e1e3a' }}>⭐</div>
+            <div>
+              <div style={{ ...s.statNum, color:'#facc15' }}>{userData?.xp || 0}</div>
+              <div style={s.statLabel}>Total XP</div>
             </div>
           </div>
         </div>
+
+        {/* Quick Actions */}
+        <div style={s.sectionTitle}>⚡ Quick Actions</div>
+        <div style={s.actionsGrid}>
+          {quickActions.map((a) => (
+            <div key={a.label} style={s.actionCard} onClick={() => navigate(a.path)}>
+              <div style={{ ...s.actionIcon, backgroundColor:a.bg }}>{a.icon}</div>
+              <div style={s.actionTitle}>{a.label}</div>
+              <div style={s.actionSub}>{a.sub}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Exam Categories */}
+        <div style={s.sectionTitle}>🎓 Exam Categories</div>
+        {categories.map((c) => (
+          <div key={c.label} style={s.catCard}>
+            <div style={{ ...s.catIcon, backgroundColor:c.bg }}>{c.icon}</div>
+            <div>
+              <div style={s.catTitle}>{c.label}</div>
+              <div style={s.catSub}>{c.sub}</div>
+            </div>
+            <div style={{ marginLeft:'auto', color:MUTED, fontSize:20 }}>›</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom Nav */}
+      <div style={s.bottomNav}>
+        {[
+          { icon:'🏠', label:'Home', path:'/dashboard' },
+          { icon:'📝', label:'Mock Exam', path:'/mock' },
+          { icon:'📊', label:'Performance', path:'/performance' },
+          { icon:'👥', label:'Leaderboard', path:'/leaderboard' },
+          { icon:'⚙️', label:'Settings', path:'/settings' },
+        ].map((n) => (
+          <button key={n.label} style={s.navBtn} onClick={() => navigate(n.path)}>
+            <div style={s.navIcon}>{n.icon}</div>
+            <div style={s.navLabel}>{n.label}</div>
+          </button>
+        ))}
       </div>
     </div>
   );
