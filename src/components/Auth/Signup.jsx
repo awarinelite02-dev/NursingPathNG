@@ -98,13 +98,13 @@ const Signup = () => {
         <div style={styles.logoRow}>
           <div style={styles.logoBox}>📚</div>
           <div>
-            <div style={styles.appName}>NMCN CBT</div>
-            <div style={styles.appSub}>Nursing Exam Prep Platform</div>
+            <div style={styles.appName}>Nurses CBT</div>
+            <div style={styles.appSub}>Nursing Schools Entrance Exam</div>
           </div>
         </div>
 
         <div style={styles.welcomeText}>Create Account</div>
-        <div style={styles.subText}>Join thousands of nursing students preparing for NMCN</div>
+        <div style={styles.subText}>Join thousands of students preparing for nursing school entrance exams</div>
 
         {error && <div style={styles.errorBox}>{error}</div>}
 
@@ -166,7 +166,7 @@ const Signup = () => {
         </div>
 
         <div style={styles.footerNote}>
-          🏥 Exclusively for NMCN-registered nursing students
+          🏥 Exclusively for nursing school applicants
         </div>
       </div>
     </div>
